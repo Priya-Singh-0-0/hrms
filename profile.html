@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>My Profile - SRM HRMS</title>
+    <style>
+        .profile-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 3rem 1rem;
+            background: #f8fafc;
+        }
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 560px;
+            padding: 2.5rem;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #2f6df6;
+            flex-shrink: 0;
+        }
+        .profile-header-info h2 { margin: 0 0 4px; color: #1e293b; font-size: 1.3rem; }
+        .profile-header-info p { margin: 0; color: #64748b; font-size: 0.9rem; }
+        .role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #dbeafe;
+            color: #1d4ed8;
+            margin-top: 6px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+        .info-row:last-of-type { border-bottom: none; }
+        .info-label { color: #64748b; font-weight: 500; }
+        .info-value { color: #1e293b; font-weight: 600; }
+
+        .attendance-section { margin-top: 2rem; }
+        .attendance-section h3 { color: #1e293b; margin-bottom: 1rem; font-size: 1rem; }
+        .attendance-empty { color: #94a3b8; font-size: 0.9rem; text-align: center; padding: 1.5rem; }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        .logout-btn:hover { background: #fecaca; }
+
+        #loadingState { text-align: center; padding: 3rem; color: #64748b; }
+    </style>
+</head>
+<body>
+    <div class="profile-wrapper">
+        <div class="profile-card">
+            <div id="loadingState"><i class="fas fa-spinner fa-spin"></i> Loading your profile...</div>
+            <div id="profileContent" style="display:none;">
+                <div class="profile-header">
+                    <div class="avatar"><i class="fas fa-user"></i></div>
+                    <div class="profile-header-info">
+                        <h2 id="profileName">SRM Student</h2>
+                        <p id="profileEmail"></p>
+                        <span class="role-badge" id="profileRole">Student</span>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value" id="infoEmail">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Role</span>
+                    <span class="info-value" id="infoRole">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">User ID</span>
+                    <span class="info-value" id="infoId" style="font-size:0.75rem; color:#94a3b8;">-</span>
+                </div>
+
+                <div class="attendance-section">
+                    <h3><i class="fas fa-clipboard-check" style="margin-right:8px; color:#2f6df6;"></i>My Attendance</h3>
+                    <div id="attendanceList"><div class="attendance-empty">No attendance records found.</div></div>
+                </div>
+
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt" style="margin-right:8px;"></i>Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { requireAuth, logout } from '/src/guard.js'
+        import { supabase } from '/src/supabase.js'
+
+        async function init() {
+            const profile = await requireAuth()
+            if (!profile) return
+
+            document.getElementById('loadingState').style.display = 'none'
+            document.getElementById('profileContent').style.display = 'block'
+
+            const emailName = profile.email.split('@')[0]
+            document.getElementById('profileName').textContent = emailName
+            document.getElementById('profileEmail').textContent = profile.email
+            document.getElementById('infoEmail').textContent = profile.email
+            document.getElementById('infoId').textContent = profile.id
+            document.getElementById('infoRole').textContent = profile.is_admin ? 'Admin' : 'Student'
+            document.getElementById('profileRole').textContent = profile.is_admin ? 'Admin' : 'Student'
+
+            if (profile.is_admin) {
+                document.getElementById('profileRole').style.background = '#dcfce7'
+                document.getElementById('profileRole').style.color = '#166534'
+            }
+
+            const { data: records } = await supabase
+                .from('attendance')
+                .select('id, timestamp, status')
+                .eq('user_id', profile.id)
+                .order('timestamp', { ascending: false })
+                .limit(10)
+
+            if (records && records.length > 0) {
+                const list = records.map(r => {
+                    const date = new Date(r.timestamp).toLocaleString()
+                    const statusClass = r.status === 'present' ? 'badge-success' : r.status === 'absent' ? 'badge-danger' : 'badge-warning'
+                    return `<div class="info-row">
+                        <span class="info-label">${date}</span>
+                        <span class="badge ${statusClass}">${r.status}</span>
+                    </div>`
+                }).join('')
+                document.getElementById('attendanceList').innerHTML = list
+            }
+        }
+
+        init()
+        document.getElementById('logoutBtn').addEventListener('click', logout)
+    </script>
+</body>
+</html>

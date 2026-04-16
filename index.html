@@ -2,61 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Login - SRM KTR HRMS</title>
     <style>
-        body { 
-            justify-content: center; 
-            align-items: center; 
-            background: #e2e8f0; 
-            display: flex; 
-            height: 100vh; 
+        body {
+            justify-content: center;
+            align-items: center;
+            background: #e2e8f0;
+            display: flex;
+            height: 100vh;
             margin: 0;
         }
-        .login-card, .forgot-card { 
-            background: white; 
-            padding: 3rem; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            width: 400px; 
-            text-align: center; 
+        .login-card, .signup-card, .forgot-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 420px;
+            text-align: center;
         }
-        .forgot-card { display: none; } /* Hidden by default */
+        .signup-card, .forgot-card { display: none; }
 
-        .login-card h2, .forgot-card h2 { margin: 15px 0 5px; color: #1e293b; }
-        .login-card p, .forgot-card p { color: #64748b; margin-bottom: 25px; font-size: 0.9rem; }
-        
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 8px 0; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 8px; 
-            outline: none; 
+        .login-card h2, .signup-card h2, .forgot-card h2 { margin: 15px 0 5px; color: #1e293b; }
+        .login-card > p, .signup-card > p, .forgot-card > p { color: #64748b; margin-bottom: 25px; font-size: 0.9rem; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
             box-sizing: border-box;
+            font-size: 0.95rem;
         }
-        
-        button { 
-            width: 100%; 
-            padding: 12px; 
-            background: #2f6df6; 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            margin-top: 15px; 
+        input:focus { border-color: #2f6df6; }
+
+        button.primary-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2f6df6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 0.95rem;
         }
+        button.primary-btn:hover { background: #1d5ce0; }
+        button.primary-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
         .link-btn {
-            display: block;
-            margin-top: 15px;
+            display: inline-block;
+            margin-top: 12px;
             color: #64748b;
             text-decoration: none;
             font-size: 0.85rem;
             cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
         }
         .link-btn:hover { color: #2f6df6; text-decoration: underline; }
+
+        .error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 8px; min-height: 20px; }
+        .success-msg { color: #16a34a; font-size: 0.85rem; margin-top: 8px; min-height: 20px; }
+
+        .divider { display: flex; align-items: center; gap: 10px; margin: 15px 0; color: #94a3b8; font-size: 0.8rem; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
     </style>
 </head>
 <body>
@@ -64,44 +79,41 @@
         <img src="logo.png" alt="SRM Logo" style="width: 120px;">
         <h2>SRM KTR HRMS</h2>
         <p>Hostel Room Management System</p>
-        <input type="text" placeholder="Admin Username">
-        <input type="password" placeholder="Password">
-        <button onclick="window.location.href='dashboard.html'">Login to Dashboard</button>
-        <a class="link-btn" onclick="toggleView(true)">Forgot Password?</a>
+        <input type="email" id="loginEmail" placeholder="Email (@srmist.edu.in)">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <p class="error-msg" id="loginError"></p>
+        <button class="primary-btn" id="loginBtn">Login to Dashboard</button>
+        <div class="divider">or</div>
+        <button class="link-btn" onclick="showView('signup')">New user? Create Account</button><br>
+        <button class="link-btn" onclick="showView('forgot')">Forgot Password?</button>
+    </div>
+
+    <div class="signup-card" id="signupCard">
+        <img src="logo.png" alt="SRM Logo" style="width: 80px;">
+        <h2>Create Account</h2>
+        <p>Only @srmist.edu.in email addresses are allowed.</p>
+        <input type="email" id="signupEmail" placeholder="Email (@srmist.edu.in)">
+        <input type="password" id="signupPassword" placeholder="Password (min 6 characters)">
+        <input type="password" id="signupConfirm" placeholder="Confirm Password">
+        <p class="error-msg" id="signupError"></p>
+        <p class="success-msg" id="signupSuccess"></p>
+        <button class="primary-btn" id="signupBtn">Create Account</button>
+        <br>
+        <button class="link-btn" onclick="showView('login')">Already have an account? Login</button>
     </div>
 
     <div class="forgot-card" id="forgotCard">
         <img src="logo.png" alt="SRM Logo" style="width: 80px;">
         <h2>Reset Password</h2>
-        <p>Enter your admin email to receive a reset link.</p>
-        <input type="email" id="resetEmail" placeholder="Registered Admin Email">
-        <button onclick="handleReset()">Send Reset Link</button>
-        <a class="link-btn" onclick="toggleView(false)">Back to Login</a>
+        <p>Enter your email to receive a reset link.</p>
+        <input type="email" id="resetEmail" placeholder="Registered Email (@srmist.edu.in)">
+        <p class="error-msg" id="resetError"></p>
+        <p class="success-msg" id="resetSuccess"></p>
+        <button class="primary-btn" id="resetBtn">Send Reset Link</button>
+        <br>
+        <button class="link-btn" onclick="showView('login')">Back to Login</button>
     </div>
 
-    <script>
-        function toggleView(showForgot) {
-            const login = document.getElementById('loginCard');
-            const forgot = document.getElementById('forgotCard');
-            
-            if (showForgot) {
-                login.style.display = 'none';
-                forgot.style.display = 'block';
-            } else {
-                login.style.display = 'block';
-                forgot.style.display = 'none';
-            }
-        }
-
-        function handleReset() {
-            const email = document.getElementById('resetEmail').value;
-            if (email) {
-                alert('A password reset link has been sent to: ' + email);
-                toggleView(false); // Send user back to login
-            } else {
-                alert('Please enter a valid email address.');
-            }
-        }
-    </script>
+    <script type="module" src="/src/auth.js"></script>
 </body>
 </html>
