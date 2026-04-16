@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Maintenance - SRM HRMS</title>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+    <img src="logo.png" alt="SRM Logo">
+    <span>SRM KTR</span>
+</div>
+        <nav>
+            <a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="rooms.html" class="nav-link"><i class="fas fa-bed"></i> Manage Rooms</a>
+            <a href="vacancy.html" class="nav-link"><i class="fas fa-door-open"></i> Vacancy Info</a>
+            <a href="maintenance.html" class="nav-link active"><i class="fas fa-tools"></i> Maintenance</a>
+        </nav>
+    </aside>
+    <main class="content">
+        <h2>Maintenance Requests</h2>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Hostel</th><th>Room</th><th>Issue</th><th>Priority</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td>Kaari</td><td>K-202</td><td>AC Repair</td>
+                        <td><span class="badge badge-danger">High</span></td>
+                        <td><button style="background:#2f6df6; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;" onclick="this.innerText='Fixed'; this.style.background='#10b981'">Resolve</button></td>
+                    </tr>
+                    <tr>
+                        <td>Adhiyaman</td><td>A-105</td><td>Light Flickering</td>
+                        <td><span class="badge badge-warning">Medium</span></td>
+                        <td><button style="background:#2f6df6; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;" onclick="this.innerText='Fixed'; this.style.background='#10b981'">Resolve</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

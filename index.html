@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Login - SRM KTR HRMS</title>
+    <style>
+        body { 
+            justify-content: center; 
+            align-items: center; 
+            background: #e2e8f0; 
+            display: flex; 
+            height: 100vh; 
+            margin: 0;
+        }
+        .login-card, .forgot-card { 
+            background: white; 
+            padding: 3rem; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            width: 400px; 
+            text-align: center; 
+        }
+        .forgot-card { display: none; } /* Hidden by default */
+
+        .login-card h2, .forgot-card h2 { margin: 15px 0 5px; color: #1e293b; }
+        .login-card p, .forgot-card p { color: #64748b; margin-bottom: 25px; font-size: 0.9rem; }
+        
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            outline: none; 
+            box-sizing: border-box;
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #2f6df6; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 15px; 
+        }
+
+        .link-btn {
+            display: block;
+            margin-top: 15px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .link-btn:hover { color: #2f6df6; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="login-card" id="loginCard">
+        <img src="logo.png" alt="SRM Logo" style="width: 120px;">
+        <h2>SRM KTR HRMS</h2>
+        <p>Hostel Room Management System</p>
+        <input type="text" placeholder="Admin Username">
+        <input type="password" placeholder="Password">
+        <button onclick="window.location.href='dashboard.html'">Login to Dashboard</button>
+        <a class="link-btn" onclick="toggleView(true)">Forgot Password?</a>
+    </div>
+
+    <div class="forgot-card" id="forgotCard">
+        <img src="logo.png" alt="SRM Logo" style="width: 80px;">
+        <h2>Reset Password</h2>
+        <p>Enter your admin email to receive a reset link.</p>
+        <input type="email" id="resetEmail" placeholder="Registered Admin Email">
+        <button onclick="handleReset()">Send Reset Link</button>
+        <a class="link-btn" onclick="toggleView(false)">Back to Login</a>
+    </div>
+
+    <script>
+        function toggleView(showForgot) {
+            const login = document.getElementById('loginCard');
+            const forgot = document.getElementById('forgotCard');
+            
+            if (showForgot) {
+                login.style.display = 'none';
+                forgot.style.display = 'block';
+            } else {
+                login.style.display = 'block';
+                forgot.style.display = 'none';
+            }
+        }
+
+        function handleReset() {
+            const email = document.getElementById('resetEmail').value;
+            if (email) {
+                alert('A password reset link has been sent to: ' + email);
+                toggleView(false); // Send user back to login
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        }
+    </script>
+</body>
+</html>
